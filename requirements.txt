@@ -1,0 +1,22 @@
+# OSINT-ThreatLink Module 1 Requirements
+# Install with: pip install -r requirements.txt
+
+# Core OSINT Tools
+sherlock-project==0.14.3
+holehe==1.62
+
+# HTTP & Web
+httpx[cli]==0.27.0
+requests==2.31.0
+beautifulsoup4==4.12.3
+lxml==5.1.0
+
+# DNS & WHOIS
+dnspython==2.6.1
+python-whois==0.9.4
+
+# Utilities
+colorama==0.4.6
+
+# Note: subfinder must be installed separately as a binary
+# Download from: https://github.com/projectdiscovery/subfinder/releases

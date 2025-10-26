@@ -1,0 +1,41 @@
+# ---- Python ----
+_pycache_/
+*.py[cod]
+*$py.class
+
+# ---- Virtual environment ----
+venv/
+.env/
+env/
+.venv/
+
+# ---- Build & distribution ----
+build/
+dist/
+*.egg-info/
+.eggs/
+*.egg
+
+# ---- IDE / Editor ----
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# ---- Logs & Databases ----
+*.log
+*.sqlite3
+*.db
+
+# ---- OS Files ----
+.DS_Store
+Thumbs.db
+
+# ---- Testing ----
+.coverage
+htmlcov/
+.tox/
+.pytest_cache/
+
+# ---- Jupyter ----
+.ipynb_checkpoints/

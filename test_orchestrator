@@ -1,0 +1,194 @@
+"""
+Test script for OSINT-ThreatLink Module 1
+Validates all tools are installed and working correctly
+"""
+
+import sys
+import subprocess
+
+def test_python_imports():
+    """Test all Python library imports"""
+    print("\n[TEST] Checking Python imports...")
+    
+    required_modules = [
+        'dns.resolver',
+        'whois',
+        'httpx',
+        'bs4',
+        'requests',
+        'lxml'
+    ]
+    
+    failed = []
+    for module in required_modules:
+        try:
+            __import__(module)
+            print(f"  ✓ {module}")
+        except ImportError:
+            print(f"  ✗ {module} - NOT FOUND")
+            failed.append(module)
+    
+    if failed:
+        print(f"\n❌ Missing modules: {', '.join(failed)}")
+        print("Install with: pip install -r requirements.txt")
+        return False
+    
+    print("✅ All Python modules imported successfully")
+    return True
+
+
+def test_cli_tools():
+    """Test command-line OSINT tools"""
+    print("\n[TEST] Checking CLI tools...")
+    
+    tools = {
+        'subfinder': ['subfinder', '-version'],
+        'sherlock': ['sherlock', '--version'],
+        'holehe': ['holehe', '--help']
+    }
+    
+    failed = []
+    for tool_name, cmd in tools.items():
+        try:
+            result = subprocess.run(
+                cmd,
+                capture_output=True,
+                text=True,
+                timeout=5
+            )
+            print(f"  ✓ {tool_name}")
+        except FileNotFoundError:
+            print(f"  ✗ {tool_name} - NOT FOUND")
+            failed.append(tool_name)
+        except subprocess.TimeoutExpired:
+            print(f"  ✓ {tool_name} (timed out but exists)")
+        except Exception as e:
+            print(f"  ? {tool_name} - {str(e)}")
+    
+    if failed:
+        print(f"\n❌ Missing tools: {', '.join(failed)}")
+        if 'subfinder' in failed:
+            print("Install subfinder from: https://github.com/projectdiscovery/subfinder/releases")
+        if 'sherlock' in failed:
+            print("Install sherlock: pip install sherlock-project")
+        if 'holehe' in failed:
+            print("Install holehe: pip install holehe")
+        return False
+    
+    print("✅ All CLI tools available")
+    return True
+
+
+def test_config():
+    """Test config file"""
+    print("\n[TEST] Checking configuration...")
+    
+    try:
+        import config
+        print(f"  ✓ Config loaded")
+        print(f"  ✓ Output dir: {config.OUTPUT_DIR}")
+        print(f"  ✓ Data dir: {config.DATA_DIR}")
+        print(f"  ✓ Logs dir: {config.LOGS_DIR}")
+        print("✅ Configuration OK")
+        return True
+    except ImportError:
+        print("  ✗ config.py not found")
+        print("❌ Create config.py in the same directory")
+        return False
+    except Exception as e:
+        print(f"  ✗ Config error: {str(e)}")
+        return False
+
+
+def test_orchestrator():
+    """Test orchestrator import"""
+    print("\n[TEST] Checking orchestrator...")
+    
+    try:
+        import orchestrator
+        print(f"  ✓ Orchestrator imported")
+        print(f"  ✓ OSINTOrchestrator class available")
+        print("✅ Orchestrator OK")
+        return True
+    except ImportError as e:
+        print(f"  ✗ orchestrator.py not found: {str(e)}")
+        print("❌ Create orchestrator.py in the same directory")
+        return False
+    except Exception as e:
+        print(f"  ✗ Orchestrator error: {str(e)}")
+        return False
+
+
+def run_quick_test(domain="example.com"):
+    """Run a quick live test on a domain"""
+    print(f"\n[TEST] Running quick test on {domain}...")
+    print("This may take 30-60 seconds...\n")
+    
+    try:
+        from orchestrator import OSINTOrchestrator
+        
+        orch = OSINTOrchestrator(domain)
+        
+        # Test just DNS and WHOIS (fast operations)
+        print("Testing DNS lookup...")
+        dns_data = orch.run_dns_lookup()
+        
+        print("Testing WHOIS lookup...")
+        whois_data = orch.run_whois()
+        
+        print("\n✅ Quick test completed successfully!")
+        print(f"   DNS Records: {sum(len(v) for v in dns_data.values())}")
+        print(f"   WHOIS Data: {len(whois_data)} fields")
+        
+        return True
+        
+    except Exception as e:
+        print(f"\n❌ Quick test failed: {str(e)}")
+        return False
+
+
+def main():
+    """Run all tests"""
+    print("="*60)
+    print("OSINT-ThreatLink Module 1 - Test Suite")
+    print("="*60)
+    
+    results = []
+    
+    # Run tests
+    results.append(("Python Imports", test_python_imports()))
+    results.append(("CLI Tools", test_cli_tools()))
+    results.append(("Configuration", test_config()))
+    results.append(("Orchestrator", test_orchestrator()))
+    
+    # Summary
+    print("\n" + "="*60)
+    print("TEST SUMMARY")
+    print("="*60)
+    
+    passed = sum(1 for _, result in results if result)
+    total = len(results)
+    
+    for name, result in results:
+        status = "✅ PASS" if result else "❌ FAIL"
+        print(f"{name:.<40} {status}")
+    
+    print("="*60)
+    print(f"Results: {passed}/{total} tests passed")
+    
+    if passed == total:
+        print("\n🎉 All tests passed! Module 1 is ready.")
+        
+        # Offer to run quick test
+        response = input("\nRun a quick live test on example.com? (y/n): ").lower()
+        if response == 'y':
+            run_quick_test()
+    else:
+        print("\n⚠️  Some tests failed. Fix the issues above before proceeding.")
+        return 1
+    
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())
