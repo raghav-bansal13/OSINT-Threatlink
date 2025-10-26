@@ -38,6 +38,8 @@ class OSINTOrchestrator:
         if config.ENABLE_LOGGING:
             self._setup_logging()
     
+        self._clear_old_outputs()
+    
     def _setup_logging(self):
         """Setup logging configuration"""
         import logging
@@ -54,6 +56,20 @@ class OSINTOrchestrator:
             print(f"[{level.upper()}] {message}")
         if config.ENABLE_LOGGING:
             getattr(self.logger, level)(message)
+
+    def _clear_old_outputs(self):
+        try:
+            # Clear subfinder output
+            subfinder_output = config.SUBFINDER_CONFIG["output_file"]
+            if subfinder_output.exists():
+                subfinder_output.unlink()
+                self._log("Cleared old subfinder output")
+            
+            # Note: holehe and sherlock now use target-specific names,
+            # so they won't conflict between runs
+            
+        except Exception as e:
+            self._log(f"Error clearing outputs: {str(e)}", "warning")
     
     # ============================================
     # TOOL 1: SUBFINDER - Subdomain Enumeration
@@ -63,7 +79,7 @@ class OSINTOrchestrator:
         self._log(f"Running subfinder on {self.target}...")
         
         try:
-            output_file = config.SUBFINDER_CONFIG["output_file"]
+            output_file = config.OUTPUT_DIR / f"subfinder_{self.target}_{self.timestamp}.txt"
             
             cmd = [
                 "subfinder",
@@ -178,7 +194,7 @@ class OSINTOrchestrator:
         self._log(f"Running holehe on {email}...")
         
         try:
-            output_file = config.HOLEHE_CONFIG["output_file"]
+            output_file = config.OUTPUT_DIR / f"holehe_{self.target}_{self.timestamp}.txt"
             
             cmd = [
                 "holehe",
@@ -228,7 +244,7 @@ class OSINTOrchestrator:
         self._log(f"Running sherlock on username: {username}...")
         
         try:
-            output_dir = config.SHERLOCK_CONFIG["output_dir"]
+            output_dir = config.OUTPUT_DIR / "sherlock" / f"{self.target}_{self.timestamp}"
             output_dir.mkdir(exist_ok=True)
             
             cmd = [
