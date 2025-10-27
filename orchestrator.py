@@ -19,7 +19,7 @@ from bs4 import BeautifulSoup
 
 import config
 
-class ParallelOSINTOrchestrator:
+class OSINTOrchestrator:
     """Orchestrator with parallel tool execution"""
     
     def __init__(self, target_domain):
@@ -453,7 +453,7 @@ def main():
     target = sys.argv[1]
     
     # Create parallel orchestrator
-    orchestrator = ParallelOSINTOrchestrator(target)
+    orchestrator = OSINTOrchestrator(target)
     
     # Run all tools in parallel
     results = orchestrator.run_all_parallel()
