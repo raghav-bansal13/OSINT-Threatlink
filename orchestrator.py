@@ -1,6 +1,6 @@
 """
-OSINT-ThreatLink Module 1: OSINT Orchestrator
-Automates the execution of multiple OSINT tools and collects raw output
+OSINT-ThreatLink Module 1: Parallel Orchestrator
+Runs independent OSINT tools concurrently for massive speed improvement
 """
 
 import subprocess
@@ -10,6 +10,7 @@ import time
 import asyncio
 from pathlib import Path
 from datetime import datetime
+from concurrent.futures import ThreadPoolExecutor, as_completed
 
 import dns.resolver
 import whois
@@ -19,7 +20,7 @@ from bs4 import BeautifulSoup
 import config
 
 class OSINTOrchestrator:
-    """Main orchestrator class that runs all OSINT tools"""
+    """Orchestrator with parallel tool execution"""
     
     def __init__(self, target_domain):
         self.target = target_domain
@@ -37,6 +38,8 @@ class OSINTOrchestrator:
         
         if config.ENABLE_LOGGING:
             self._setup_logging()
+        
+        self._clear_old_outputs()
     
     def _setup_logging(self):
         """Setup logging configuration"""
@@ -55,15 +58,25 @@ class OSINTOrchestrator:
         if config.ENABLE_LOGGING:
             getattr(self.logger, level)(message)
     
+    def _clear_old_outputs(self):
+        """Clear previous run outputs to prevent data mixing"""
+        try:
+            subfinder_output = config.SUBFINDER_CONFIG["output_file"]
+            if subfinder_output.exists():
+                subfinder_output.unlink()
+                self._log("Cleared old subfinder output")
+        except Exception as e:
+            self._log(f"Error clearing outputs: {str(e)}", "warning")
+    
     # ============================================
-    # TOOL 1: SUBFINDER - Subdomain Enumeration
+    # TOOL 1: SUBFINDER
     # ============================================
     def run_subfinder(self):
         """Execute subfinder to discover subdomains"""
-        self._log(f"Running subfinder on {self.target}...")
+        self._log(f"[PARALLEL] Running subfinder on {self.target}...")
         
         try:
-            output_file = config.SUBFINDER_CONFIG["output_file"]
+            output_file = config.OUTPUT_DIR / f"subfinder_{self.target}_{self.timestamp}.txt"
             
             cmd = [
                 "subfinder",
@@ -72,7 +85,6 @@ class OSINTOrchestrator:
                 "-silent" if config.SUBFINDER_CONFIG["silent"] else ""
             ]
             
-            # Remove empty strings from cmd
             cmd = [c for c in cmd if c]
             
             result = subprocess.run(
@@ -82,40 +94,32 @@ class OSINTOrchestrator:
                 timeout=config.SUBFINDER_CONFIG["timeout"]
             )
             
-            # Read results
             if output_file.exists():
                 with open(output_file, 'r') as f:
                     subdomains = [line.strip() for line in f if line.strip()]
-                    self.results["subdomains"] = subdomains
-                    self._log(f"Found {len(subdomains)} subdomains via subfinder")
-                    return subdomains
+                    self._log(f"[SUBFINDER] Found {len(subdomains)} subdomains")
+                    return ("subdomains", subdomains)
             else:
-                self._log("Subfinder output file not found", "warning")
-                return []
+                return ("subdomains", [])
                 
         except subprocess.TimeoutExpired:
-            self._log("Subfinder timed out", "error")
-            return []
+            self._log("[SUBFINDER] Timed out", "error")
+            return ("subdomains", [])
         except FileNotFoundError:
-            self._log("Subfinder not found. Install it or ensure it's in PATH", "error")
-            return []
+            self._log("[SUBFINDER] Not found in PATH", "error")
+            return ("subdomains", [])
         except Exception as e:
-            self._log(f"Subfinder error: {str(e)}", "error")
-            return []
+            self._log(f"[SUBFINDER] Error: {str(e)}", "error")
+            return ("subdomains", [])
     
     # ============================================
-    # TOOL 2: DNS PYTHON - DNS Records
+    # TOOL 2: DNS LOOKUP
     # ============================================
     def run_dns_lookup(self):
         """Perform DNS lookups for A, MX, NS records"""
-        self._log(f"Performing DNS lookups for {self.target}...")
+        self._log(f"[PARALLEL] Performing DNS lookups for {self.target}...")
         
-        dns_data = {
-            "A": [],
-            "MX": [],
-            "NS": [],
-            "TXT": []
-        }
+        dns_data = {"A": [], "MX": [], "NS": [], "TXT": []}
         
         resolver = dns.resolver.Resolver()
         resolver.timeout = config.DNS_CONFIG["timeout"]
@@ -128,22 +132,19 @@ class OSINTOrchestrator:
                 answers = resolver.resolve(self.target, record_type)
                 for rdata in answers:
                     dns_data[record_type].append(str(rdata))
-                
-                self._log(f"Found {len(answers)} {record_type} records")
-            except dns.exception.DNSException as e:
-                self._log(f"No {record_type} records found: {str(e)}", "warning")
-            except Exception as e:
-                self._log(f"DNS lookup error for {record_type}: {str(e)}", "error")
+            except Exception:
+                pass
         
-        self.results["dns_records"] = dns_data
-        return dns_data
+        total_records = sum(len(v) for v in dns_data.values())
+        self._log(f"[DNS] Found {total_records} total records")
+        return ("dns_records", dns_data)
     
     # ============================================
-    # TOOL 3: WHOIS - Domain Information
+    # TOOL 3: WHOIS
     # ============================================
     def run_whois(self):
         """Fetch WHOIS information for the domain"""
-        self._log(f"Fetching WHOIS data for {self.target}...")
+        self._log(f"[PARALLEL] Fetching WHOIS data for {self.target}...")
         
         try:
             w = whois.whois(self.target)
@@ -157,34 +158,28 @@ class OSINTOrchestrator:
                 "emails": w.emails if hasattr(w, 'emails') else []
             }
             
-            self.results["whois_data"] = whois_data
+            # Extract emails
+            emails = whois_data.get("emails", [])
+            if emails:
+                self._log(f"[WHOIS] Found {len(emails)} emails")
             
-            # Extract emails from WHOIS
-            if whois_data.get("emails"):
-                self.results["emails"].extend(whois_data["emails"])
-            
-            self._log("WHOIS data retrieved successfully")
-            return whois_data
+            return ("whois", {"whois_data": whois_data, "emails": emails if emails else []})
             
         except Exception as e:
-            self._log(f"WHOIS lookup error: {str(e)}", "error")
-            return {}
+            self._log(f"[WHOIS] Error: {str(e)}", "error")
+            return ("whois", {"whois_data": {}, "emails": []})
     
     # ============================================
-    # TOOL 4: HOLEHE - Email Registration Check
+    # TOOL 4: HOLEHE (Run on discovered emails)
     # ============================================
     def run_holehe(self, email):
         """Check if email is registered on various sites using holehe"""
-        self._log(f"Running holehe on {email}...")
+        self._log(f"[PARALLEL] Running holehe on {email}...")
         
         try:
-            output_file = config.HOLEHE_CONFIG["output_file"]
+            output_file = config.OUTPUT_DIR / f"holehe_{self.target}_{self.timestamp}.txt"
             
-            cmd = [
-                "holehe",
-                email,
-                "--only-used"  # Only show sites where email is registered
-            ]
+            cmd = ["holehe", email, "--only-used"]
             
             result = subprocess.run(
                 cmd,
@@ -193,7 +188,6 @@ class OSINTOrchestrator:
                 timeout=config.HOLEHE_CONFIG["timeout"]
             )
             
-            # Parse output
             registrations = []
             if result.stdout:
                 lines = result.stdout.strip().split('\n')
@@ -201,35 +195,28 @@ class OSINTOrchestrator:
                     if '[+]' in line or 'used' in line.lower():
                         registrations.append(line.strip())
             
-            self._log(f"Found {len(registrations)} registrations for {email}")
+            self._log(f"[HOLEHE] Found {len(registrations)} registrations for {email}")
             
-            # Save to file
             with open(output_file, 'a') as f:
                 f.write(f"\n=== {email} - {self.timestamp} ===\n")
                 f.write(result.stdout)
             
-            return registrations
+            return ("holehe", registrations)
             
-        except subprocess.TimeoutExpired:
-            self._log("Holehe timed out", "error")
-            return []
-        except FileNotFoundError:
-            self._log("Holehe not found. Install it with: pip install holehe", "error")
-            return []
         except Exception as e:
-            self._log(f"Holehe error: {str(e)}", "error")
-            return []
+            self._log(f"[HOLEHE] Error: {str(e)}", "error")
+            return ("holehe", [])
     
     # ============================================
-    # TOOL 5: SHERLOCK - Username Search
+    # TOOL 5: SHERLOCK (Run on discovered usernames)
     # ============================================
     def run_sherlock(self, username):
         """Search for username across social media platforms"""
-        self._log(f"Running sherlock on username: {username}...")
+        self._log(f"[PARALLEL] Running sherlock on username: {username}...")
         
         try:
-            output_dir = config.SHERLOCK_CONFIG["output_dir"]
-            output_dir.mkdir(exist_ok=True)
+            output_dir = config.OUTPUT_DIR / "sherlock" / f"{self.target}_{self.timestamp}"
+            output_dir.mkdir(exist_ok=True, parents=True)
             
             cmd = [
                 "sherlock",
@@ -246,7 +233,6 @@ class OSINTOrchestrator:
                 timeout=config.SHERLOCK_CONFIG["timeout"] + 30
             )
             
-            # Parse found profiles
             profiles = []
             if result.stdout:
                 lines = result.stdout.strip().split('\n')
@@ -254,21 +240,15 @@ class OSINTOrchestrator:
                     if 'http' in line.lower():
                         profiles.append(line.strip())
             
-            self._log(f"Found {len(profiles)} social profiles for {username}")
-            return profiles
+            self._log(f"[SHERLOCK] Found {len(profiles)} profiles for {username}")
+            return ("sherlock", profiles)
             
-        except subprocess.TimeoutExpired:
-            self._log("Sherlock timed out", "error")
-            return []
-        except FileNotFoundError:
-            self._log("Sherlock not found. Install it with: pip install sherlock-project", "error")
-            return []
         except Exception as e:
-            self._log(f"Sherlock error: {str(e)}", "error")
-            return []
+            self._log(f"[SHERLOCK] Error: {str(e)}", "error")
+            return ("sherlock", [])
     
     # ============================================
-    # TOOL 6: HTTPX - Web Endpoint Probing
+    # TOOL 6: HTTPX (Already async, but we'll integrate it)
     # ============================================
     async def probe_endpoint_async(self, client, url):
         """Async probe a single endpoint with httpx"""
@@ -283,11 +263,9 @@ class OSINTOrchestrator:
                 follow_redirects=config.HTTPX_CONFIG["follow_redirects"]
             )
             
-            # Extract title
             soup = BeautifulSoup(response.text, 'lxml')
             title = soup.title.string if soup.title else "No title"
             
-            # Detect basic technologies
             technologies = []
             html_lower = response.text.lower()
             
@@ -310,75 +288,115 @@ class OSINTOrchestrator:
                 "headers": dict(response.headers)
             }
             
-            self._log(f"Probed {url}: {response.status_code} - {title}")
             return endpoint_data
             
-        except httpx.TimeoutException:
-            self._log(f"Timeout probing {url}", "warning")
-            return None
-        except Exception as e:
-            self._log(f"Error probing {url}: {str(e)}", "warning")
+        except Exception:
             return None
     
     async def run_httpx_probes(self, urls):
         """Probe multiple URLs concurrently with httpx"""
-        self._log(f"Probing {len(urls)} endpoints with httpx...")
+        self._log(f"[PARALLEL] Probing {len(urls)} endpoints with httpx...")
         
         async with httpx.AsyncClient() as client:
             tasks = [self.probe_endpoint_async(client, url) for url in urls]
             results = await asyncio.gather(*tasks)
         
-        # Filter out None results
         valid_results = [r for r in results if r is not None]
-        self.results["web_endpoints"] = valid_results
-        
-        self._log(f"Successfully probed {len(valid_results)}/{len(urls)} endpoints")
-        return valid_results
+        self._log(f"[HTTPX] Successfully probed {len(valid_results)}/{len(urls)} endpoints")
+        return ("web_endpoints", valid_results)
     
     # ============================================
-    # MAIN ORCHESTRATION
+    # PARALLEL ORCHESTRATION - THE MAGIC ✨
     # ============================================
-    def run_all(self):
-        """Execute all OSINT tools in sequence"""
+    
+    def run_all_parallel(self):
+        """Execute OSINT tools in PARALLEL for maximum speed"""
         self._log("="*60)
-        self._log(f"Starting OSINT reconnaissance on: {self.target}")
+        self._log(f"Starting PARALLEL OSINT reconnaissance on: {self.target}")
         self._log("="*60)
         
         start_time = time.time()
         
-        # Step 1: Subdomain enumeration
-        subdomains = self.run_subfinder()
+        # Phase 1: Run independent tools in parallel (no dependencies)
+        self._log("\n[PHASE 1] Running independent tools in parallel...")
         
-        # Step 2: DNS lookups
-        dns_data = self.run_dns_lookup()
+        with ThreadPoolExecutor(max_workers=3) as executor:
+            # Submit all independent tasks
+            futures = {
+                executor.submit(self.run_subfinder): "subfinder",
+                executor.submit(self.run_dns_lookup): "dns",
+                executor.submit(self.run_whois): "whois"
+            }
+            
+            # Collect results as they complete
+            for future in as_completed(futures):
+                tool_name = futures[future]
+                try:
+                    result_type, result_data = future.result()
+                    
+                    if result_type == "subdomains":
+                        self.results["subdomains"] = result_data
+                    elif result_type == "dns_records":
+                        self.results["dns_records"] = result_data
+                    elif result_type == "whois":
+                        self.results["whois_data"] = result_data["whois_data"]
+                        if result_data["emails"]:
+                            self.results["emails"].extend(result_data["emails"])
+                    
+                    self._log(f"✓ {tool_name} completed")
+                except Exception as e:
+                    self._log(f"✗ {tool_name} failed: {str(e)}", "error")
         
-        # Step 3: WHOIS lookup
-        whois_data = self.run_whois()
+        phase1_time = time.time() - start_time
+        self._log(f"\n[PHASE 1] Completed in {phase1_time:.2f}s")
         
-        # Step 4: Web endpoint probing (async)
-        if subdomains:
-            # Probe discovered subdomains + main domain
-            all_domains = [self.target] + subdomains[:20]  # Limit to 20 for speed
-            asyncio.run(self.run_httpx_probes(all_domains))
+        # Phase 2: Run dependent tasks (need Phase 1 results)
+        self._log("\n[PHASE 2] Running dependent tools in parallel...")
+        phase2_start = time.time()
         
-        # Step 5: Email checks (if emails found in WHOIS)
-        if self.results.get("emails"):
-            for email in self.results["emails"][:3]:  # Limit to 3 emails
-                self.run_holehe(email)
+        # Probe web endpoints (needs subdomains from Phase 1)
+        if self.results.get("subdomains"):
+            all_domains = [self.target] + self.results["subdomains"][:20]
+            web_result_type, web_results = asyncio.run(self.run_httpx_probes(all_domains))
+            self.results["web_endpoints"] = web_results
         
-        # Step 6: Username search (extract from emails/subdomains)
-        potential_usernames = self._extract_usernames()
-        if potential_usernames:
-            for username in potential_usernames[:3]:  # Limit to 3 usernames
-                profiles = self.run_sherlock(username)
-                self.results["social_profiles"].extend(profiles)
+        # Phase 3: Run email/username tools in parallel (needs emails/usernames from Phase 1)
+        self._log("\n[PHASE 3] Running OSINT on discovered entities...")
+        phase3_start = time.time()
         
+        with ThreadPoolExecutor(max_workers=4) as executor:
+            futures = []
+            
+            # Run holehe on discovered emails
+            for email in self.results.get("emails", [])[:3]:
+                futures.append(executor.submit(self.run_holehe, email))
+            
+            # Run sherlock on extracted usernames
+            potential_usernames = self._extract_usernames()
+            for username in potential_usernames[:3]:
+                futures.append(executor.submit(self.run_sherlock, username))
+            
+            # Collect results
+            for future in as_completed(futures):
+                try:
+                    result_type, result_data = future.result()
+                    if result_type == "sherlock":
+                        self.results["social_profiles"].extend(result_data)
+                except Exception as e:
+                    self._log(f"✗ Task failed: {str(e)}", "error")
+        
+        phase3_time = time.time() - phase3_start
+        
+        # Final timing
         elapsed = time.time() - start_time
-        self._log("="*60)
-        self._log(f"OSINT reconnaissance completed in {elapsed:.2f} seconds")
+        self._log("\n" + "="*60)
+        self._log(f"PARALLEL OSINT completed in {elapsed:.2f} seconds")
+        self._log(f"  Phase 1 (Independent): {phase1_time:.2f}s")
+        self._log(f"  Phase 2 (Web probing): {time.time() - phase2_start - phase3_time:.2f}s")
+        self._log(f"  Phase 3 (Email/Username): {phase3_time:.2f}s")
         self._log("="*60)
         
-        # Save final results
+        # Save results
         self.save_results()
         
         return self.results
@@ -387,20 +405,18 @@ class OSINTOrchestrator:
         """Extract potential usernames from emails and subdomains"""
         usernames = set()
         
-        # From emails
         for email in self.results.get("emails", []):
             if '@' in email:
                 username = email.split('@')[0]
                 usernames.add(username)
         
-        # From subdomains (admin, dev, etc.)
         for subdomain in self.results.get("subdomains", [])[:10]:
             parts = subdomain.replace(self.target, '').split('.')
             for part in parts:
                 if part and len(part) > 3 and part not in ['www', 'mail', 'ftp']:
                     usernames.add(part)
         
-        return list(usernames)[:5]  # Return max 5 usernames
+        return list(usernames)[:5]
     
     def save_results(self):
         """Save all results to JSON file"""
@@ -436,11 +452,11 @@ def main():
     
     target = sys.argv[1]
     
-    # Create orchestrator
+    # Create parallel orchestrator
     orchestrator = OSINTOrchestrator(target)
     
-    # Run all tools
-    results = orchestrator.run_all()
+    # Run all tools in parallel
+    results = orchestrator.run_all_parallel()
     
     # Print summary
     orchestrator.print_summary()

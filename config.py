@@ -94,3 +94,9 @@ RISK_KEYWORDS = {
         'not_found': 0
     }
 }
+
+PARALLEL_CONFIG = {
+    "max_phase1_workers": 3,  # Subfinder, DNS, WHOIS
+    "max_phase3_workers": 4,  # Holehe + Sherlock
+    "enable_parallel": True   # Toggle on/off
+}
