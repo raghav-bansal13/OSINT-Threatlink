@@ -1,0 +1,46 @@
+{
+  "target": "Bharat.com",
+  "timestamp": "20251027_195707",
+  "subdomains": [],
+  "emails": [
+    "a",
+    "b",
+    "u",
+    "s",
+    "e",
+    "@",
+    "e",
+    "n",
+    "a",
+    "m",
+    "e",
+    ".",
+    "c",
+    "o",
+    "m"
+  ],
+  "social_profiles": [],
+  "web_endpoints": [],
+  "whois_data": {
+    "domain_name": "BHARAT.COM",
+    "registrar": "eName Technology Co.,Ltd.",
+    "creation_date": "2001-11-13 19:19:19+00:00",
+    "expiration_date": "2034-11-13 19:19:19+00:00",
+    "name_servers": [
+      "NS3.DNS.COM",
+      "NS4.DNS.COM"
+    ],
+    "emails": "abuse@ename.com"
+  },
+  "dns_records": {
+    "A": [
+      "8.222.144.248"
+    ],
+    "MX": [],
+    "NS": [
+      "ns2.ename.net.",
+      "ns1.ename.net."
+    ],
+    "TXT": []
+  }
+}

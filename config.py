@@ -35,7 +35,6 @@ SUBFINDER_CONFIG = {
 SHERLOCK_CONFIG = {
     "output_dir": OUTPUT_DIR / "sherlock",
     "timeout": 60,
-    "max_usernames": 10  # Limit to avoid long waits
 }
 
 # Holehe settings

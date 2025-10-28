@@ -1,8 +1,3 @@
-"""
-OSINT-ThreatLink Module 1: Parallel Orchestrator
-Runs independent OSINT tools concurrently for massive speed improvement
-"""
-
 import subprocess
 import sys
 import json
@@ -10,6 +5,8 @@ import time
 import asyncio
 from pathlib import Path
 from datetime import datetime
+import logging
+
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
 import dns.resolver
@@ -20,7 +17,6 @@ from bs4 import BeautifulSoup
 import config
 
 class OSINTOrchestrator:
-    """Orchestrator with parallel tool execution"""
     
     def __init__(self, target_domain):
         self.target = target_domain
@@ -38,12 +34,9 @@ class OSINTOrchestrator:
         
         if config.ENABLE_LOGGING:
             self._setup_logging()
-        
         self._clear_old_outputs()
     
     def _setup_logging(self):
-        """Setup logging configuration"""
-        import logging
         logging.basicConfig(
             filename=config.LOG_FILE,
             level=logging.INFO,
@@ -52,14 +45,12 @@ class OSINTOrchestrator:
         self.logger = logging.getLogger(__name__)
     
     def _log(self, message, level="info"):
-        """Log message to console and file"""
         if config.VERBOSE:
             print(f"[{level.upper()}] {message}")
         if config.ENABLE_LOGGING:
             getattr(self.logger, level)(message)
     
     def _clear_old_outputs(self):
-        """Clear previous run outputs to prevent data mixing"""
         try:
             subfinder_output = config.SUBFINDER_CONFIG["output_file"]
             if subfinder_output.exists():
@@ -68,11 +59,7 @@ class OSINTOrchestrator:
         except Exception as e:
             self._log(f"Error clearing outputs: {str(e)}", "warning")
     
-    # ============================================
-    # TOOL 1: SUBFINDER
-    # ============================================
     def run_subfinder(self):
-        """Execute subfinder to discover subdomains"""
         self._log(f"[PARALLEL] Running subfinder on {self.target}...")
         
         try:
@@ -112,11 +99,7 @@ class OSINTOrchestrator:
             self._log(f"[SUBFINDER] Error: {str(e)}", "error")
             return ("subdomains", [])
     
-    # ============================================
-    # TOOL 2: DNS LOOKUP
-    # ============================================
     def run_dns_lookup(self):
-        """Perform DNS lookups for A, MX, NS records"""
         self._log(f"[PARALLEL] Performing DNS lookups for {self.target}...")
         
         dns_data = {"A": [], "MX": [], "NS": [], "TXT": []}
@@ -139,11 +122,7 @@ class OSINTOrchestrator:
         self._log(f"[DNS] Found {total_records} total records")
         return ("dns_records", dns_data)
     
-    # ============================================
-    # TOOL 3: WHOIS
-    # ============================================
     def run_whois(self):
-        """Fetch WHOIS information for the domain"""
         self._log(f"[PARALLEL] Fetching WHOIS data for {self.target}...")
         
         try:
@@ -158,7 +137,6 @@ class OSINTOrchestrator:
                 "emails": w.emails if hasattr(w, 'emails') else []
             }
             
-            # Extract emails
             emails = whois_data.get("emails", [])
             if emails:
                 self._log(f"[WHOIS] Found {len(emails)} emails")
@@ -169,11 +147,7 @@ class OSINTOrchestrator:
             self._log(f"[WHOIS] Error: {str(e)}", "error")
             return ("whois", {"whois_data": {}, "emails": []})
     
-    # ============================================
-    # TOOL 4: HOLEHE (Run on discovered emails)
-    # ============================================
     def run_holehe(self, email):
-        """Check if email is registered on various sites using holehe"""
         self._log(f"[PARALLEL] Running holehe on {email}...")
         
         try:
@@ -207,11 +181,7 @@ class OSINTOrchestrator:
             self._log(f"[HOLEHE] Error: {str(e)}", "error")
             return ("holehe", [])
     
-    # ============================================
-    # TOOL 5: SHERLOCK (Run on discovered usernames)
-    # ============================================
     def run_sherlock(self, username):
-        """Search for username across social media platforms"""
         self._log(f"[PARALLEL] Running sherlock on username: {username}...")
         
         try:
@@ -247,11 +217,7 @@ class OSINTOrchestrator:
             self._log(f"[SHERLOCK] Error: {str(e)}", "error")
             return ("sherlock", [])
     
-    # ============================================
-    # TOOL 6: HTTPX (Already async, but we'll integrate it)
-    # ============================================
     async def probe_endpoint_async(self, client, url):
-        """Async probe a single endpoint with httpx"""
         
         if not url.startswith('http'):
             url = f"https://{url}"
@@ -294,7 +260,6 @@ class OSINTOrchestrator:
             return None
     
     async def run_httpx_probes(self, urls):
-        """Probe multiple URLs concurrently with httpx"""
         self._log(f"[PARALLEL] Probing {len(urls)} endpoints with httpx...")
         
         async with httpx.AsyncClient() as client:
@@ -305,30 +270,22 @@ class OSINTOrchestrator:
         self._log(f"[HTTPX] Successfully probed {len(valid_results)}/{len(urls)} endpoints")
         return ("web_endpoints", valid_results)
     
-    # ============================================
-    # PARALLEL ORCHESTRATION - THE MAGIC ✨
-    # ============================================
-    
     def run_all_parallel(self):
-        """Execute OSINT tools in PARALLEL for maximum speed"""
         self._log("="*60)
         self._log(f"Starting PARALLEL OSINT reconnaissance on: {self.target}")
         self._log("="*60)
         
         start_time = time.time()
         
-        # Phase 1: Run independent tools in parallel (no dependencies)
         self._log("\n[PHASE 1] Running independent tools in parallel...")
         
         with ThreadPoolExecutor(max_workers=3) as executor:
-            # Submit all independent tasks
             futures = {
                 executor.submit(self.run_subfinder): "subfinder",
                 executor.submit(self.run_dns_lookup): "dns",
                 executor.submit(self.run_whois): "whois"
             }
             
-            # Collect results as they complete
             for future in as_completed(futures):
                 tool_name = futures[future]
                 try:
@@ -350,33 +307,27 @@ class OSINTOrchestrator:
         phase1_time = time.time() - start_time
         self._log(f"\n[PHASE 1] Completed in {phase1_time:.2f}s")
         
-        # Phase 2: Run dependent tasks (need Phase 1 results)
         self._log("\n[PHASE 2] Running dependent tools in parallel...")
         phase2_start = time.time()
         
-        # Probe web endpoints (needs subdomains from Phase 1)
         if self.results.get("subdomains"):
             all_domains = [self.target] + self.results["subdomains"][:20]
             web_result_type, web_results = asyncio.run(self.run_httpx_probes(all_domains))
             self.results["web_endpoints"] = web_results
         
-        # Phase 3: Run email/username tools in parallel (needs emails/usernames from Phase 1)
         self._log("\n[PHASE 3] Running OSINT on discovered entities...")
         phase3_start = time.time()
         
         with ThreadPoolExecutor(max_workers=4) as executor:
             futures = []
             
-            # Run holehe on discovered emails
             for email in self.results.get("emails", [])[:3]:
                 futures.append(executor.submit(self.run_holehe, email))
             
-            # Run sherlock on extracted usernames
             potential_usernames = self._extract_usernames()
             for username in potential_usernames[:3]:
                 futures.append(executor.submit(self.run_sherlock, username))
             
-            # Collect results
             for future in as_completed(futures):
                 try:
                     result_type, result_data = future.result()
@@ -387,22 +338,19 @@ class OSINTOrchestrator:
         
         phase3_time = time.time() - phase3_start
         
-        # Final timing
         elapsed = time.time() - start_time
         self._log("\n" + "="*60)
         self._log(f"PARALLEL OSINT completed in {elapsed:.2f} seconds")
-        self._log(f"  Phase 1 (Independent): {phase1_time:.2f}s")
-        self._log(f"  Phase 2 (Web probing): {time.time() - phase2_start - phase3_time:.2f}s")
-        self._log(f"  Phase 3 (Email/Username): {phase3_time:.2f}s")
+        self._log(f"  Phase 1 (Independent): {phase1_time:.2f}s")
+        self._log(f"  Phase 2 (Web probing): {time.time() - phase2_start - phase3_time:.2f}s")
+        self._log(f"  Phase 3 (Email/Username): {phase3_time:.2f}s")
         self._log("="*60)
         
-        # Save results
         self.save_results()
         
         return self.results
     
     def _extract_usernames(self):
-        """Extract potential usernames from emails and subdomains"""
         usernames = set()
         
         for email in self.results.get("emails", []):
@@ -419,7 +367,6 @@ class OSINTOrchestrator:
         return list(usernames)[:5]
     
     def save_results(self):
-        """Save all results to JSON file"""
         output_file = config.DATA_DIR / f"osint_results_{self.target}_{self.timestamp}.json"
         
         try:
@@ -431,7 +378,6 @@ class OSINTOrchestrator:
             self._log(f"Error saving results: {str(e)}", "error")
     
     def print_summary(self):
-        """Print a summary of findings"""
         print("\n" + "="*60)
         print(f"OSINT SUMMARY FOR: {self.target}")
         print("="*60)
@@ -444,7 +390,6 @@ class OSINTOrchestrator:
 
 
 def main():
-    """Main entry point"""
     if len(sys.argv) < 2:
         print("Usage: python orchestrator.py <target_domain>")
         print("Example: python orchestrator.py example.com")
@@ -452,13 +397,10 @@ def main():
     
     target = sys.argv[1]
     
-    # Create parallel orchestrator
     orchestrator = OSINTOrchestrator(target)
     
-    # Run all tools in parallel
     results = orchestrator.run_all_parallel()
     
-    # Print summary
     orchestrator.print_summary()
 
 
