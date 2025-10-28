@@ -1,0 +1,776 @@
+{
+  "target": "example.com",
+  "entities": [
+    {
+      "id": "domain_0",
+      "type": "domain",
+      "value": "example.com",
+      "source": "user_input",
+      "timestamp": "2025-10-28T13:36:57.949601",
+      "metadata": {
+        "is_root": true,
+        "registrar": "Example Registrar Inc.",
+        "creation_date": "1995-08-14",
+        "expiration_date": "2025-08-13",
+        "high_value_target": true,
+        "connection_count": 20
+      }
+    },
+    {
+      "id": "subdomain_1",
+      "type": "subdomain",
+      "value": "www.example.com",
+      "source": "subfinder",
+      "timestamp": "2025-10-28T13:36:57.950014",
+      "metadata": {
+        "parent_domain": "example.com",
+        "risk_keywords": [
+          "www_low"
+        ],
+        "high_value_target": true,
+        "connection_count": 5
+      }
+    },
+    {
+      "id": "subdomain_2",
+      "type": "subdomain",
+      "value": "dev.example.com",
+      "source": "subfinder",
+      "timestamp": "2025-10-28T13:36:57.950047",
+      "metadata": {
+        "parent_domain": "example.com",
+        "risk_keywords": [
+          "dev_high"
+        ],
+        "high_value_target": true,
+        "connection_count": 5
+      }
+    },
+    {
+      "id": "subdomain_3",
+      "type": "subdomain",
+      "value": "api.example.com",
+      "source": "subfinder",
+      "timestamp": "2025-10-28T13:36:57.950063",
+      "metadata": {
+        "parent_domain": "example.com",
+        "risk_keywords": [
+          "api_medium"
+        ],
+        "high_value_target": true,
+        "connection_count": 5
+      }
+    },
+    {
+      "id": "subdomain_4",
+      "type": "subdomain",
+      "value": "admin.example.com",
+      "source": "subfinder",
+      "timestamp": "2025-10-28T13:36:57.950073",
+      "metadata": {
+        "parent_domain": "example.com",
+        "risk_keywords": [
+          "admin_high"
+        ],
+        "high_value_target": true,
+        "connection_count": 4
+      }
+    },
+    {
+      "id": "subdomain_5",
+      "type": "subdomain",
+      "value": "mail.example.com",
+      "source": "subfinder",
+      "timestamp": "2025-10-28T13:36:57.950082",
+      "metadata": {
+        "parent_domain": "example.com",
+        "risk_keywords": [],
+        "high_value_target": true,
+        "connection_count": 4
+      }
+    },
+    {
+      "id": "subdomain_6",
+      "type": "subdomain",
+      "value": "vpn.example.com",
+      "source": "subfinder",
+      "timestamp": "2025-10-28T13:36:57.950091",
+      "metadata": {
+        "parent_domain": "example.com",
+        "risk_keywords": [
+          "vpn_high"
+        ],
+        "high_value_target": true,
+        "connection_count": 4
+      }
+    },
+    {
+      "id": "ip_address_7",
+      "type": "ip_address",
+      "value": "93.184.216.34",
+      "source": "dns_lookup",
+      "timestamp": "2025-10-28T13:36:57.950210",
+      "metadata": {
+        "record_type": "A"
+      }
+    },
+    {
+      "id": "ip_address_8",
+      "type": "ip_address",
+      "value": "93.184.216.35",
+      "source": "dns_lookup",
+      "timestamp": "2025-10-28T13:36:57.950233",
+      "metadata": {
+        "record_type": "A"
+      }
+    },
+    {
+      "id": "mail_server_9",
+      "type": "mail_server",
+      "value": "mail.example.com",
+      "source": "dns_lookup",
+      "timestamp": "2025-10-28T13:36:57.950244",
+      "metadata": {
+        "record_type": "MX"
+      }
+    },
+    {
+      "id": "nameserver_10",
+      "type": "nameserver",
+      "value": "ns1.example.com",
+      "source": "dns_lookup",
+      "timestamp": "2025-10-28T13:36:57.950252",
+      "metadata": {
+        "record_type": "NS"
+      }
+    },
+    {
+      "id": "nameserver_11",
+      "type": "nameserver",
+      "value": "ns2.example.com",
+      "source": "dns_lookup",
+      "timestamp": "2025-10-28T13:36:57.950260",
+      "metadata": {
+        "record_type": "NS"
+      }
+    },
+    {
+      "id": "txt_record_12",
+      "type": "txt_record",
+      "value": "v=spf1 include:_spf.example.com ~all",
+      "source": "dns_lookup",
+      "timestamp": "2025-10-28T13:36:57.950267",
+      "metadata": {
+        "record_type": "TXT"
+      }
+    },
+    {
+      "id": "email_13",
+      "type": "email",
+      "value": "admin@example.com",
+      "source": "whois",
+      "timestamp": "2025-10-28T13:36:57.950622",
+      "metadata": {
+        "domain": "example.com",
+        "high_value_target": true,
+        "connection_count": 9
+      }
+    },
+    {
+      "id": "email_14",
+      "type": "email",
+      "value": "security@example.com",
+      "source": "whois",
+      "timestamp": "2025-10-28T13:36:57.950645",
+      "metadata": {
+        "domain": "example.com",
+        "high_value_target": true,
+        "connection_count": 9
+      }
+    },
+    {
+      "id": "email_15",
+      "type": "email",
+      "value": "dev@dev.example.com",
+      "source": "whois",
+      "timestamp": "2025-10-28T13:36:57.950656",
+      "metadata": {
+        "domain": "dev.example.com",
+        "high_value_target": true,
+        "connection_count": 4
+      }
+    },
+    {
+      "id": "email_16",
+      "type": "email",
+      "value": "contact@example.com",
+      "source": "whois",
+      "timestamp": "2025-10-28T13:36:57.950665",
+      "metadata": {
+        "domain": "example.com",
+        "high_value_target": true,
+        "connection_count": 9
+      }
+    },
+    {
+      "id": "url_17",
+      "type": "url",
+      "value": "https://www.example.com",
+      "source": "httpx",
+      "timestamp": "2025-10-28T13:36:57.950861",
+      "metadata": {
+        "status_code": 200,
+        "title": "Example Domain",
+        "server": "nginx",
+        "technologies": [
+          "nginx",
+          "PHP"
+        ],
+        "content_length": 1256
+      }
+    },
+    {
+      "id": "url_18",
+      "type": "url",
+      "value": "https://api.example.com",
+      "source": "httpx",
+      "timestamp": "2025-10-28T13:36:57.951080",
+      "metadata": {
+        "status_code": 200,
+        "title": "API Documentation",
+        "server": "Apache",
+        "technologies": [
+          "Apache",
+          "REST"
+        ],
+        "content_length": 3420
+      }
+    },
+    {
+      "id": "username_20",
+      "type": "username",
+      "value": "admin",
+      "source": "theharvester_derived",
+      "timestamp": "2025-10-28T13:36:57.951244",
+      "metadata": {
+        "derived_from": "email"
+      }
+    },
+    {
+      "id": "username_22",
+      "type": "username",
+      "value": "security",
+      "source": "theharvester_derived",
+      "timestamp": "2025-10-28T13:36:57.951280",
+      "metadata": {
+        "derived_from": "email"
+      }
+    },
+    {
+      "id": "username_24",
+      "type": "username",
+      "value": "dev",
+      "source": "theharvester_derived",
+      "timestamp": "2025-10-28T13:36:57.951305",
+      "metadata": {
+        "derived_from": "email"
+      }
+    },
+    {
+      "id": "username_26",
+      "type": "username",
+      "value": "contact",
+      "source": "theharvester_derived",
+      "timestamp": "2025-10-28T13:36:57.951324",
+      "metadata": {
+        "derived_from": "email"
+      }
+    },
+    {
+      "id": "social_profile_27",
+      "type": "social_profile",
+      "value": "https://github.com/admin",
+      "source": "sherlock",
+      "timestamp": "2025-10-28T13:36:57.951679",
+      "metadata": {
+        "platform": "GitHub",
+        "username": "admin"
+      }
+    },
+    {
+      "id": "social_profile_28",
+      "type": "social_profile",
+      "value": "https://twitter.com/security",
+      "source": "sherlock",
+      "timestamp": "2025-10-28T13:36:57.951718",
+      "metadata": {
+        "platform": "Twitter",
+        "username": "security"
+      }
+    },
+    {
+      "id": "social_profile_29",
+      "type": "social_profile",
+      "value": "https://linkedin.com/in/dev",
+      "source": "sherlock",
+      "timestamp": "2025-10-28T13:36:57.951740",
+      "metadata": {
+        "platform": "LinkedIn",
+        "username": "dev"
+      }
+    }
+  ],
+  "relationships": [
+    {
+      "id": "rel_0",
+      "source_id": "subdomain_1",
+      "target_id": "domain_0",
+      "relationship_type": "subdomain_of",
+      "confidence": 1.0,
+      "metadata": {}
+    },
+    {
+      "id": "rel_1",
+      "source_id": "subdomain_2",
+      "target_id": "domain_0",
+      "relationship_type": "subdomain_of",
+      "confidence": 1.0,
+      "metadata": {}
+    },
+    {
+      "id": "rel_2",
+      "source_id": "subdomain_3",
+      "target_id": "domain_0",
+      "relationship_type": "subdomain_of",
+      "confidence": 1.0,
+      "metadata": {}
+    },
+    {
+      "id": "rel_3",
+      "source_id": "subdomain_4",
+      "target_id": "domain_0",
+      "relationship_type": "subdomain_of",
+      "confidence": 1.0,
+      "metadata": {}
+    },
+    {
+      "id": "rel_4",
+      "source_id": "subdomain_5",
+      "target_id": "domain_0",
+      "relationship_type": "subdomain_of",
+      "confidence": 1.0,
+      "metadata": {}
+    },
+    {
+      "id": "rel_5",
+      "source_id": "subdomain_6",
+      "target_id": "domain_0",
+      "relationship_type": "subdomain_of",
+      "confidence": 1.0,
+      "metadata": {}
+    },
+    {
+      "id": "rel_6",
+      "source_id": "ip_address_7",
+      "target_id": "domain_0",
+      "relationship_type": "dns_a_for",
+      "confidence": 1.0,
+      "metadata": {}
+    },
+    {
+      "id": "rel_7",
+      "source_id": "ip_address_8",
+      "target_id": "domain_0",
+      "relationship_type": "dns_a_for",
+      "confidence": 1.0,
+      "metadata": {}
+    },
+    {
+      "id": "rel_8",
+      "source_id": "mail_server_9",
+      "target_id": "domain_0",
+      "relationship_type": "dns_mx_for",
+      "confidence": 1.0,
+      "metadata": {}
+    },
+    {
+      "id": "rel_9",
+      "source_id": "nameserver_10",
+      "target_id": "domain_0",
+      "relationship_type": "dns_ns_for",
+      "confidence": 1.0,
+      "metadata": {}
+    },
+    {
+      "id": "rel_10",
+      "source_id": "nameserver_11",
+      "target_id": "domain_0",
+      "relationship_type": "dns_ns_for",
+      "confidence": 1.0,
+      "metadata": {}
+    },
+    {
+      "id": "rel_11",
+      "source_id": "txt_record_12",
+      "target_id": "domain_0",
+      "relationship_type": "dns_txt_for",
+      "confidence": 1.0,
+      "metadata": {}
+    },
+    {
+      "id": "rel_12",
+      "source_id": "email_13",
+      "target_id": "domain_0",
+      "relationship_type": "registered_to",
+      "confidence": 0.9,
+      "metadata": {}
+    },
+    {
+      "id": "rel_13",
+      "source_id": "email_14",
+      "target_id": "domain_0",
+      "relationship_type": "registered_to",
+      "confidence": 0.9,
+      "metadata": {}
+    },
+    {
+      "id": "rel_14",
+      "source_id": "email_15",
+      "target_id": "domain_0",
+      "relationship_type": "registered_to",
+      "confidence": 0.9,
+      "metadata": {}
+    },
+    {
+      "id": "rel_15",
+      "source_id": "email_16",
+      "target_id": "domain_0",
+      "relationship_type": "registered_to",
+      "confidence": 0.9,
+      "metadata": {}
+    },
+    {
+      "id": "rel_16",
+      "source_id": "url_17",
+      "target_id": "subdomain_1",
+      "relationship_type": "hosted_on",
+      "confidence": 1.0,
+      "metadata": {}
+    },
+    {
+      "id": "rel_17",
+      "source_id": "url_18",
+      "target_id": "subdomain_3",
+      "relationship_type": "hosted_on",
+      "confidence": 1.0,
+      "metadata": {}
+    },
+    {
+      "id": "rel_18",
+      "source_id": "email_13",
+      "target_id": "domain_0",
+      "relationship_type": "associated_with",
+      "confidence": 0.8,
+      "metadata": {}
+    },
+    {
+      "id": "rel_19",
+      "source_id": "username_20",
+      "target_id": "email_13",
+      "relationship_type": "username_of",
+      "confidence": 0.9,
+      "metadata": {}
+    },
+    {
+      "id": "rel_20",
+      "source_id": "email_14",
+      "target_id": "domain_0",
+      "relationship_type": "associated_with",
+      "confidence": 0.8,
+      "metadata": {}
+    },
+    {
+      "id": "rel_21",
+      "source_id": "username_22",
+      "target_id": "email_14",
+      "relationship_type": "username_of",
+      "confidence": 0.9,
+      "metadata": {}
+    },
+    {
+      "id": "rel_22",
+      "source_id": "email_15",
+      "target_id": "domain_0",
+      "relationship_type": "associated_with",
+      "confidence": 0.8,
+      "metadata": {}
+    },
+    {
+      "id": "rel_23",
+      "source_id": "username_24",
+      "target_id": "email_15",
+      "relationship_type": "username_of",
+      "confidence": 0.9,
+      "metadata": {}
+    },
+    {
+      "id": "rel_24",
+      "source_id": "email_16",
+      "target_id": "domain_0",
+      "relationship_type": "associated_with",
+      "confidence": 0.8,
+      "metadata": {}
+    },
+    {
+      "id": "rel_25",
+      "source_id": "username_26",
+      "target_id": "email_16",
+      "relationship_type": "username_of",
+      "confidence": 0.9,
+      "metadata": {}
+    },
+    {
+      "id": "rel_26",
+      "source_id": "social_profile_27",
+      "target_id": "username_20",
+      "relationship_type": "profile_of",
+      "confidence": 0.95,
+      "metadata": {}
+    },
+    {
+      "id": "rel_27",
+      "source_id": "social_profile_28",
+      "target_id": "username_22",
+      "relationship_type": "profile_of",
+      "confidence": 0.95,
+      "metadata": {}
+    },
+    {
+      "id": "rel_28",
+      "source_id": "social_profile_29",
+      "target_id": "username_24",
+      "relationship_type": "profile_of",
+      "confidence": 0.95,
+      "metadata": {}
+    },
+    {
+      "id": "rel_29",
+      "source_id": "email_13",
+      "target_id": "subdomain_1",
+      "relationship_type": "email_from_subdomain",
+      "confidence": 0.8,
+      "metadata": {
+        "correlation_type": "domain_match"
+      }
+    },
+    {
+      "id": "rel_30",
+      "source_id": "email_13",
+      "target_id": "subdomain_2",
+      "relationship_type": "email_from_subdomain",
+      "confidence": 0.8,
+      "metadata": {
+        "correlation_type": "domain_match"
+      }
+    },
+    {
+      "id": "rel_31",
+      "source_id": "email_13",
+      "target_id": "subdomain_3",
+      "relationship_type": "email_from_subdomain",
+      "confidence": 0.8,
+      "metadata": {
+        "correlation_type": "domain_match"
+      }
+    },
+    {
+      "id": "rel_32",
+      "source_id": "email_13",
+      "target_id": "subdomain_4",
+      "relationship_type": "email_from_subdomain",
+      "confidence": 0.8,
+      "metadata": {
+        "correlation_type": "domain_match"
+      }
+    },
+    {
+      "id": "rel_33",
+      "source_id": "email_13",
+      "target_id": "subdomain_5",
+      "relationship_type": "email_from_subdomain",
+      "confidence": 0.8,
+      "metadata": {
+        "correlation_type": "domain_match"
+      }
+    },
+    {
+      "id": "rel_34",
+      "source_id": "email_13",
+      "target_id": "subdomain_6",
+      "relationship_type": "email_from_subdomain",
+      "confidence": 0.8,
+      "metadata": {
+        "correlation_type": "domain_match"
+      }
+    },
+    {
+      "id": "rel_35",
+      "source_id": "email_14",
+      "target_id": "subdomain_1",
+      "relationship_type": "email_from_subdomain",
+      "confidence": 0.8,
+      "metadata": {
+        "correlation_type": "domain_match"
+      }
+    },
+    {
+      "id": "rel_36",
+      "source_id": "email_14",
+      "target_id": "subdomain_2",
+      "relationship_type": "email_from_subdomain",
+      "confidence": 0.8,
+      "metadata": {
+        "correlation_type": "domain_match"
+      }
+    },
+    {
+      "id": "rel_37",
+      "source_id": "email_14",
+      "target_id": "subdomain_3",
+      "relationship_type": "email_from_subdomain",
+      "confidence": 0.8,
+      "metadata": {
+        "correlation_type": "domain_match"
+      }
+    },
+    {
+      "id": "rel_38",
+      "source_id": "email_14",
+      "target_id": "subdomain_4",
+      "relationship_type": "email_from_subdomain",
+      "confidence": 0.8,
+      "metadata": {
+        "correlation_type": "domain_match"
+      }
+    },
+    {
+      "id": "rel_39",
+      "source_id": "email_14",
+      "target_id": "subdomain_5",
+      "relationship_type": "email_from_subdomain",
+      "confidence": 0.8,
+      "metadata": {
+        "correlation_type": "domain_match"
+      }
+    },
+    {
+      "id": "rel_40",
+      "source_id": "email_14",
+      "target_id": "subdomain_6",
+      "relationship_type": "email_from_subdomain",
+      "confidence": 0.8,
+      "metadata": {
+        "correlation_type": "domain_match"
+      }
+    },
+    {
+      "id": "rel_41",
+      "source_id": "email_15",
+      "target_id": "subdomain_2",
+      "relationship_type": "email_from_subdomain",
+      "confidence": 0.8,
+      "metadata": {
+        "correlation_type": "domain_match"
+      }
+    },
+    {
+      "id": "rel_42",
+      "source_id": "email_16",
+      "target_id": "subdomain_1",
+      "relationship_type": "email_from_subdomain",
+      "confidence": 0.8,
+      "metadata": {
+        "correlation_type": "domain_match"
+      }
+    },
+    {
+      "id": "rel_43",
+      "source_id": "email_16",
+      "target_id": "subdomain_2",
+      "relationship_type": "email_from_subdomain",
+      "confidence": 0.8,
+      "metadata": {
+        "correlation_type": "domain_match"
+      }
+    },
+    {
+      "id": "rel_44",
+      "source_id": "email_16",
+      "target_id": "subdomain_3",
+      "relationship_type": "email_from_subdomain",
+      "confidence": 0.8,
+      "metadata": {
+        "correlation_type": "domain_match"
+      }
+    },
+    {
+      "id": "rel_45",
+      "source_id": "email_16",
+      "target_id": "subdomain_4",
+      "relationship_type": "email_from_subdomain",
+      "confidence": 0.8,
+      "metadata": {
+        "correlation_type": "domain_match"
+      }
+    },
+    {
+      "id": "rel_46",
+      "source_id": "email_16",
+      "target_id": "subdomain_5",
+      "relationship_type": "email_from_subdomain",
+      "confidence": 0.8,
+      "metadata": {
+        "correlation_type": "domain_match"
+      }
+    },
+    {
+      "id": "rel_47",
+      "source_id": "email_16",
+      "target_id": "subdomain_6",
+      "relationship_type": "email_from_subdomain",
+      "confidence": 0.8,
+      "metadata": {
+        "correlation_type": "domain_match"
+      }
+    }
+  ],
+  "stats": {
+    "total_entities": 26,
+    "total_relationships": 48,
+    "entity_types": {
+      "domain": 1,
+      "subdomain": 6,
+      "ip_address": 2,
+      "mail_server": 1,
+      "nameserver": 2,
+      "txt_record": 1,
+      "email": 4,
+      "url": 2,
+      "username": 4,
+      "social_profile": 3
+    },
+    "relationship_types": {
+      "subdomain_of": 6,
+      "dns_a_for": 2,
+      "dns_mx_for": 1,
+      "dns_ns_for": 2,
+      "dns_txt_for": 1,
+      "registered_to": 4,
+      "hosted_on": 2,
+      "associated_with": 4,
+      "username_of": 4,
+      "profile_of": 3,
+      "email_from_subdomain": 19
+    }
+  }
+}
