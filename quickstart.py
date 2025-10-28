@@ -70,7 +70,7 @@ def run_scan(target):
         
         # Create and run orchestrator
         orch = OSINTOrchestrator(target)
-        results = orch.run_all()
+        results = orch.run_all_parallel()
         
         # Print summary
         print("\n")
