@@ -13,7 +13,6 @@ import dns.resolver
 import whois
 import httpx
 from bs4 import BeautifulSoup
-
 import config
 
 class OSINTOrchestrator:
