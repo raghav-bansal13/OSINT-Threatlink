@@ -18,5 +18,16 @@ python-whois==0.9.4
 # Utilities
 colorama==0.4.6
 
+# ============================================
+# Module 3: ML Risk Scoring Engine
+# ============================================
+xgboost>=2.0
+scikit-learn>=1.4
+shap>=0.45
+pandas>=2.0
+matplotlib>=3.8
+joblib>=1.3
+numpy>=1.26
+
 # Note: subfinder must be installed separately as a binary
 # Download from: https://github.com/projectdiscovery/subfinder/releases

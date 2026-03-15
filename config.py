@@ -99,3 +99,12 @@ PARALLEL_CONFIG = {
     "max_phase3_workers": 4,  # Holehe + Sherlock
     "enable_parallel": True   # Toggle on/off
 }
+
+# ============================================
+# MODULE 3: ML Risk Scoring Engine Paths
+# ============================================
+ML_DIR            = BASE_DIR / "ml_model"
+ML_MODEL_PATH     = ML_DIR  / "xgb_malicious_site_model.pkl"
+ML_DATASET_PATH   = DATA_DIR / "ml_training_dataset.csv"
+SHAP_PLOT_PATH    = DATA_DIR / "shap_feature_importance.png"
+ML_METRICS_PATH   = DATA_DIR / "ml_metrics.json"

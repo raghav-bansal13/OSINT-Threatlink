@@ -5,6 +5,7 @@ _pycache_/
 
 # ---- Virtual environment ----
 venv/
+osint-env/
 .env/
 env/
 .venv/
@@ -39,3 +40,12 @@ htmlcov/
 
 # ---- Jupyter ----
 .ipynb_checkpoints/
+
+# ---- Module 3: ML artifacts (generated, not source) ----
+ml_model/xgb_malicious_site_model.pkl
+data/shap_feature_importance.png
+data/ml_metrics.json
+
+# ---- Temp debug files ----
+train_output.txt
+err.txt
