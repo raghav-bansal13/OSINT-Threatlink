@@ -1,0 +1,193 @@
+{
+  "target": "hello.com",
+  "timestamp": "20260315_204618",
+  "subdomains": [
+    "orkut.hello.com",
+    "secure.hello.com",
+    "ext.hello.com",
+    "nginx.hello.com",
+    "alpha.hello.com",
+    "blogger.hello.com",
+    "jagiring.hello.com",
+    "myweb.hello.com",
+    "webmail.hello.com",
+    "api.hello.com",
+    "docker.hello.com",
+    "hellodotcom.hello.com",
+    "openam.hello.com",
+    "o1.sgm.hello.com",
+    "ws.hello.com",
+    "am.hello.com",
+    "blog1.hello.com",
+    "www.hello.com",
+    "wwwww.hello.com",
+    "xn--news-k84f3lgaa162kmia464ep25aba8095cys1d.hello.com",
+    "one.hello.com",
+    "ccc.hello.com",
+    "ddns.hello.com",
+    "m.hello.com",
+    "my.hello.com",
+    "ww.hello.com",
+    "us.hello.com",
+    "admin1.hello.com",
+    "app.hello.com",
+    "abc.def.hello.com",
+    "fred.hello.com",
+    "hello.hello.com",
+    "mail.hello.com",
+    "news.hello.com",
+    "o2.sgm.hello.com",
+    "cryptox.hello.com",
+    "selfservice.app.hello.com",
+    "abc.hello.com",
+    "admin.hello.com",
+    "cpanel.hello.com",
+    "gg.hello.com",
+    "local.hello.com"
+  ],
+  "emails": [
+    "a",
+    "b",
+    "u",
+    "s",
+    "e",
+    "-",
+    "c",
+    "o",
+    "m",
+    "p",
+    "l",
+    "a",
+    "i",
+    "n",
+    "t",
+    "s",
+    "@",
+    "s",
+    "q",
+    "u",
+    "a",
+    "r",
+    "e",
+    "s",
+    "p",
+    "a",
+    "c",
+    "e",
+    ".",
+    "c",
+    "o",
+    "m"
+  ],
+  "social_profiles": [],
+  "web_endpoints": [
+    {
+      "url": "https://hello.com",
+      "status_code": 200,
+      "title": "hello network",
+      "server": "Google Frontend",
+      "content_length": 1806,
+      "technologies": [],
+      "headers": {
+        "x-cloud-trace-context": "a7680420dfea5cd0697a2dae80c50ca0",
+        "server": "Google Frontend",
+        "content-length": "1814",
+        "date": "Sun, 15 Mar 2026 15:16:29 GMT",
+        "expires": "Sun, 15 Mar 2026 15:26:29 GMT",
+        "cache-control": "public, max-age=600",
+        "etag": "\"7cVmZQ\"",
+        "content-type": "text/html",
+        "age": "0"
+      }
+    },
+    {
+      "url": "https://orkut.hello.com",
+      "status_code": 200,
+      "title": "orkut",
+      "server": "Google Frontend",
+      "content_length": 3376,
+      "technologies": [],
+      "headers": {
+        "x-cloud-trace-context": "b8df43beee51d5780561767ccccc959b",
+        "server": "Google Frontend",
+        "date": "Sun, 15 Mar 2026 15:16:29 GMT",
+        "expires": "Sun, 15 Mar 2026 15:26:29 GMT",
+        "cache-control": "public, max-age=600",
+        "etag": "\"J_1yhA\"",
+        "content-type": "text/html",
+        "content-length": "3391",
+        "age": "0"
+      }
+    },
+    {
+      "url": "https://hellodotcom.hello.com",
+      "status_code": 200,
+      "title": "hello network",
+      "server": "Google Frontend",
+      "content_length": 1806,
+      "technologies": [],
+      "headers": {
+        "date": "Sun, 15 Mar 2026 15:16:29 GMT",
+        "expires": "Sun, 15 Mar 2026 15:26:29 GMT",
+        "cache-control": "public, max-age=600",
+        "etag": "\"7cVmZQ\"",
+        "x-cloud-trace-context": "d7efdffcafe0b94ccc1e9f64bf0a494f",
+        "content-type": "text/html",
+        "server": "Google Frontend",
+        "transfer-encoding": "chunked"
+      }
+    },
+    {
+      "url": "https://www.hello.com",
+      "status_code": 200,
+      "title": "hello network",
+      "server": "Google Frontend",
+      "content_length": 1806,
+      "technologies": [],
+      "headers": {
+        "x-cloud-trace-context": "03db7a318b98ba4bdd3aed576e23f13f",
+        "content-encoding": "gzip",
+        "server": "Google Frontend",
+        "date": "Sun, 15 Mar 2026 15:09:39 GMT",
+        "expires": "Sun, 15 Mar 2026 15:19:39 GMT",
+        "cache-control": "public, max-age=600",
+        "age": "410",
+        "etag": "\"7cVmZQ\"",
+        "content-type": "text/html",
+        "transfer-encoding": "chunked"
+      }
+    }
+  ],
+  "whois_data": {
+    "domain_name": "HELLO.COM",
+    "registrar": "Squarespace Domains II LLC",
+    "creation_date": "1997-04-30 04:00:00+00:00",
+    "expiration_date": "2026-05-01 04:00:00+00:00",
+    "name_servers": [
+      "NS100.DIGICERTDNS.COM",
+      "NS101.DIGICERTDNS.COM",
+      "NS102.DIGICERTDNS.COM"
+    ],
+    "emails": "abuse-complaints@squarespace.com"
+  },
+  "dns_records": {
+    "A": [
+      "216.239.38.21",
+      "216.239.36.21",
+      "216.239.32.21",
+      "216.239.34.21"
+    ],
+    "MX": [
+      "1 SMTP.GOOGLE.com."
+    ],
+    "NS": [
+      "ns102.digicertdns.com.",
+      "ns100.digicertdns.com.",
+      "ns101.digicertdns.com."
+    ],
+    "TXT": [
+      "\"v=spf1 ip4:50.242.118.232/29 ip4:198.21.2.190 ip4:149.72.166.252 include:_spf.google.com include:mail.zendesk.com ~all\"",
+      "\"google-site-verification=iAAqFNCXI_MXI0UErMiP64xbJb9Z3bzivd3YxHfk6xw\""
+    ]
+  }
+}
